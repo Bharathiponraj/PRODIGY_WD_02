@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorful Stopwatch</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+        }
+
+        .stopwatch {
+            text-align: center;
+            background-color: yellow;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        #display {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 15px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #startStopBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #resetBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #lapBtn {
+            background-color: #008CBA;
+            color: white;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        #laps {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        #laps div {
+            background: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div id="display">00:00:00</div>
+        <button id="startStopBtn">Start</button>
+        <button id="resetBtn">Reset</button>
+        <button id="lapBtn">Lap</button>
+        <div id="laps"></div>
+    </div>
+
+    <script>
+        let startTime;
+        let updatedTime;
+        let difference;
+        let tInterval;
+        let savedTime = 0;
+        let running = false;
+        let lapCounter = 0;
+
+        const display = document.getElementById('display');
+        const startStopBtn = document.getElementById('startStopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const laps = document.getElementById('laps');
+
+        function startStop() {
+            if (!running) {
+                startTime = new Date().getTime() - savedTime;
+                tInterval = setInterval(getShowTime, 1);
+                startStopBtn.innerHTML = "Stop";
+                startStopBtn.style.backgroundColor = "#f44336";
+                running = true;
+            } else {
+                clearInterval(tInterval);
+                savedTime = difference;
+                startStopBtn.innerHTML = "Start";
+                startStopBtn.style.backgroundColor = "#4CAF50";
+                running = false;
+            }
+        }
+
+        function reset() {
+            clearInterval(tInterval);
+            savedTime = 0;
+            difference = 0;
+            running = false;
+            display.innerHTML = "00:00:00";
+            startStopBtn.innerHTML = "Start";
+            startStopBtn.style.backgroundColor = "#4CAF50";
+            laps.innerHTML = "";
+            lapCounter = 0;
+        }
+
+        function lap() {
+            if (running) {
+                lapCounter++;
+                const lapTime = document.createElement("div");
+                lapTime.innerHTML = `Lap ${lapCounter}: ${display.innerHTML}`;
+                laps.appendChild(lapTime);
+            }
+        }
+
+        function getShowTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            display.innerHTML = hours + ':' + minutes + ':' + seconds;
+        }
+
+        startStopBtn.addEventListener('click', startStop);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', lap);
+    </script>
+</body>
+</html>
